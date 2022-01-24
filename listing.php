@@ -81,7 +81,7 @@ function get_info_file($path_file){
         'hash_path' => sha1(str_replace(getcwd()."/", "", $path_file)),// hash du chemin du fichier depuis le repertoire courant
         'hash_path_complete' => sha1($path_file),//hash du chemin complet du fichier sur la machine
         'parent_directory' => str_replace(getcwd()."/", "", dirname($path_file)),//dossier parent du fichier
-        'hash_parent_directory' => str_replace(getcwd()."/", "", dirname($path_file)),//hash du dossier parent du fichier
+        'hash_parent_directory' => sha1(str_replace(getcwd()."/", "", dirname($path_file))),//hash du dossier parent du fichier
         'name' => basename($path_file),//nom du fichier
         'size' => filesize($path_file),//taille du fichier
         'hash_name' => sha1($path_file)//hash du nom du fichier

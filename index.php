@@ -56,7 +56,7 @@ if (empty($download_script)) {
                 <tr>
                     <td class="text-center">
                         <div class="form-check">
-                            <input type="checkbox" class="check_file" name="files" data-parent-hash="<?=$value_file['hash_parent_directory'];?>" value="<?=$value_file['hash_path_complete'];?>">
+                            <input type="checkbox" class="check_file" name="files" data-type="<?=$value_file['type'];?>" data-parent-hash="<?=$value_file['hash_parent_directory'];?>" data-path-hash="<?=$value_file['hash_path'];?>" value="<?=$value_file['hash_path_complete'];?>">
                         </div>
                     </td>
                     <td class="text-center">
@@ -68,7 +68,7 @@ if (empty($download_script)) {
                     <td><?=$value_file['path'];?></td>
                     <td class="text-center">
                         <a href="<?=$value_file['path'];?>" target="_blank"><i class="far fa-eye" style="font-size: 18px;"></i></a>  
-                        <?=$value_file['type'] != 'directory' ? '<a href="" data-hashfile="' . $value_file['hash_path_complete'] . '"><i class="fas fa-file-download" class="download-file" style="font-size: 18px;"></i></a>' : '<a href="#"><i class="fas fa-file-archive" style="font-size: 18px;"></i></a>';?>
+                        <?=$value_file['type'] != 'directory' ? '<a href="'. $download_script . '?path=' . getcwd() . '&files[]=' . $value_file['hash_path_complete'] . '" download><i class="fas fa-file-download" style="font-size: 18px;"></i></a>' : '<a href="#"><i class="fas fa-file-archive" style="font-size: 18px;"></i></a>';?>
                     </td>
                 </tr>
                 <?php
@@ -118,6 +118,12 @@ $(document).ready( function () {
         $('input:checkbox').not(this).prop('checked', this.checked);
     });
 
+    $(".check_file").click(function () {
+        if ($(this).data("type") == 'directory') {
+            $("input[data-parent-hash='"+$(this).data("path-hash")+"']").trigger( "click" );
+        }
+    });
+
     // bouton de téléchargement de tout les fichier séléctioné
     $(".download-multi-file").click(function(){
         var datas = { 'files' : [] };
@@ -134,7 +140,7 @@ $(document).ready( function () {
         }
         
         // lien vers la page de téléchargement je passe en GET tout les fichier a télécharger
-        var link = "<?=$download_script;?>?path=<?=getcwd();?>&files[]=" + datas['files'].join("&files[]= ");
+        var link = "<?=$download_script;?>?path=<?=getcwd();?>&files[]=" + datas['files'].join("&files[]=");
 
         // je créé un lien virtuel pour ouvrire la page de téléchargement dans un nouvelle onglet
         var element = document.createElement('a');

@@ -3,19 +3,13 @@ include 'listing.php';
 
 $result = array();
 
-//je recupere la liste des hash de chemin de fichier en get
-foreach ($_GET['files'] as $hash_files) {
-    //je m'assure qu'il n'y ai pas d'éspace dans le hash
-    $result_hash[] = str_replace(' ', '', $hash_files);
-}
-
 //je recupère la liste de tout mes fichier dans le repertoire
 foreach (list_file($_GET['path']) as $value) {
     //je recupère les infos de chaque fichier
     $value_file = get_info_file($value);
 
     //si un fichier est dans la liste des fichier a télécharger alors je stock ses infos dans un tableau
-    if (in_array($value_file['hash_path_complete'], $result_hash)) {
+    if (in_array($value_file['hash_path_complete'], $_GET['files']) && $value_file['type'] != 'directory') {
         $result[] = $value_file;
     }
 }
