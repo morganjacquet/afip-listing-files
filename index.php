@@ -1,13 +1,6 @@
 <?php
-include 'download.php';
+//listing contien toutes les fonction essentiel pour le listing et la récupération d'information des fichiers
 include 'listing.php';
-
-if (isset($_POST['dl_button'])) {
-    if (file_exists($_POST['dl_file'])) {
-        download(basename($_POST['dl_file']) . PHP_EOL, $_POST['dl_file'], 10000);
-    }
-}
-
 ?>
 
 <!DOCTYPE html>
@@ -37,7 +30,7 @@ if (isset($_POST['dl_button'])) {
                 <tr>
                     <th width="5%" class="text-center">
                         <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="check_all">
+                            <input type="checkbox" id="check_all">
                             <label class="form-check-label" for="check_all"> Tous</label>
                         </div>
                     </th>
@@ -58,7 +51,7 @@ if (isset($_POST['dl_button'])) {
                 <tr>
                     <td class="text-center">
                         <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                            <input type="checkbox" class="check_file" name="files" data-parent-hash="<?=$value_file['hash_parent_directory'];?>" value="<?=$value_file['hash_path_complete'];?>">
                         </div>
                     </td>
                     <td class="text-center">
@@ -70,7 +63,7 @@ if (isset($_POST['dl_button'])) {
                     <td><?=$value_file['path'];?></td>
                     <td class="text-center">
                         <a href="<?=$value_file['path'];?>" target="_blank"><i class="far fa-eye" style="font-size: 18px;"></i></a>  
-                        <?=$value_file['type'] != 'directory' ? '<a href="" data-hashfile="' . sha1($value_file['path_complete']) . '"><i class="fas fa-file-download" style="font-size: 18px;"></i></a>' : '<a href="#"><i class="fas fa-file-archive" style="font-size: 18px;"></i></a>';?>
+                        <?=$value_file['type'] != 'directory' ? '<a href="" data-hashfile="' . $value_file['hash_path_complete'] . '"><i class="fas fa-file-download" class="download-file" style="font-size: 18px;"></i></a>' : '<a href="#"><i class="fas fa-file-archive" style="font-size: 18px;"></i></a>';?>
                     </td>
                 </tr>
                 <?php
@@ -78,6 +71,7 @@ if (isset($_POST['dl_button'])) {
                 ?>
             </tbody>
         </table>
+        <a href="javascript:void(0)" class="download-multi-file text-center"> Télécharger la séléction</a>
     </div>
 </body>
 <!-- Fichier JS Jquery -->
@@ -94,26 +88,53 @@ if (isset($_POST['dl_button'])) {
 $(document).ready( function () {
     // Mis en forme de la liste des fcihier dans table avec datatableJS
     $('#list_files').DataTable({
-        "order": [],
+        "order": [],//par défault je ne trie aucune colone
         "columnDefs": [
             {
-                "targets": 0,
-                "orderable": false
+                "targets": 0,//on prend la première colone (checkbox)
+                "orderable": false//je désactive le trie sur cette colone
             },
             {
-                "targets": 5,
-                "orderable": false
+                "targets": 5,//on prend la dernière colone
+                "orderable": false//je désactive le trie sur cette colone
             }
         ],
         language: {
-            url: 'https://cdn.datatables.net/plug-ins/1.11.3/i18n/fr_fr.json'
+            url: 'https://cdn.datatables.net/plug-ins/1.11.3/i18n/fr_fr.json'//lien pour la traduction de la lib Datable en fr
         },
-        "pageLength": 200,
-        "paging": false
+        "pageLength": 200,//j'autorise l'affiche de 200 ligne directement pour éviter la pagination
+        "paging": false//je désactive la pagination
     });
 
+    // Check toutes les checkbox
     $("#check_all").click(function () {
         $('input:checkbox').not(this).prop('checked', this.checked);
+    });
+
+    // bouton de téléchargement de tout les fichier séléctioné
+    $(".download-multi-file").click(function(){
+        var datas = { 'files' : [], "path" : "<?=getcwd();?>"};
+
+        // récuperation de tout les fichier séléctionner
+        $.each($("input[name='files']:checked"), function(){            
+            datas['files'].push($(this).val());
+        });
+        
+        // lien vers la page de téléchargement je passe en GET tout les fichier a télécharger
+        var link = "../download.php?path=<?=getcwd();?>&files[]=" + datas['files'].join("&files[]= ");
+
+        // je créé un lien virtuel pour ouvrire la page de téléchargement dans un nouvelle onglet
+        var element = document.createElement('a');
+        element.setAttribute('href', link);
+        element.setAttribute('target', "_blank");
+
+        element.style.display = 'none';
+        document.body.appendChild(element);
+
+        element.click();
+
+        // suppression du lien virtuel
+        document.body.removeChild(element);
     });
 });
 </script>

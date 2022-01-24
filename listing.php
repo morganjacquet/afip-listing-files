@@ -73,26 +73,31 @@ function list_file($ori_folder){
  * @return array $result    all information for file
  */
 function get_info_file($path_file){
+
+    $result = array(
+        'type' => null,//directory or mime type file
+        'path' => str_replace(getcwd()."/", "", $path_file),//chemin du fichier depuis le repertoire courant
+        'path_complete' => $path_file,//chemin complet du fichier sur la machine
+        'hash_path' => sha1(str_replace(getcwd()."/", "", $path_file)),// hash du chemin du fichier depuis le repertoire courant
+        'hash_path_complete' => sha1($path_file),//hash du chemin complet du fichier sur la machine
+        'parent_directory' => str_replace(getcwd()."/", "", dirname($path_file)),//dossier parent du fichier
+        'hash_parent_directory' => str_replace(getcwd()."/", "", dirname($path_file)),//hash du dossier parent du fichier
+        'name' => basename($path_file),//nom du fichier
+        'size' => filesize($path_file),//taille du fichier
+        'hash_name' => sha1($path_file)//hash du nom du fichier
+    );
+
+    //si c'est un dossier je met par default en type directory sinon je recupère le mime type du fichier
     if (is_dir($path_file)) {
-        $result = array(
-            'type' => 'directory',
-            'path' => str_replace(getcwd()."/", "", $path_file),
-            'path_complete' => $path_file,
-            'icon' => get_icon_file('directory'),
-            'parent_directory' => str_replace(getcwd()."/", "", dirname($path_file)),
-            'name' => basename($path_file)
-        );
+        $result['type'] = 'directory';
     } else {
-        $result = array(
-            'type' => mime_content_type($path_file),
-            'path' => str_replace(getcwd()."/", "", $path_file),
-            'path_complete' => $path_file,
-            'parent_directory' => str_replace(getcwd()."/", "", dirname($path_file)),
-            'icon' => get_icon_file(mime_content_type($path_file)),
-            'name' => basename($path_file)
-        );
+        $result['type'] = mime_content_type($path_file);
     }
 
+    //je vais chercher l'icone font awesome correspondant au type du fichier
+    $result['icon'] = get_icon_file($result['type']);
+
+    //si le fichier ce trouve dans le repertoire courant il n'a pas de dossier parent j'affiche juste un tiret
     if ($result['parent_directory'] == getcwd()) {
         $result['parent_directory'] = '-';
     }
