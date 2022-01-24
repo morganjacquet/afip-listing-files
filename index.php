@@ -1,6 +1,11 @@
 <?php
 //listing contien toutes les fonction essentiel pour le listing et la récupération d'information des fichiers
 include 'listing.php';
+
+//si le chemin de mon fichier de téléchargement n'est pas défini alors il ce trouve dans le même répertoire
+if (empty($download_script)) {
+    $download_script = "download.php";
+}
 ?>
 
 <!DOCTYPE html>
@@ -71,7 +76,9 @@ include 'listing.php';
                 ?>
             </tbody>
         </table>
-        <a href="javascript:void(0)" class="download-multi-file text-center"> Télécharger la séléction</a>
+        <div class="row text-center" style="padding: 10px 0px 50px;">
+            <a href="javascript:void(0)" class="download-multi-file btn btn-primary"> Télécharger la séléction</a>
+        </div>
     </div>
 </body>
 <!-- Fichier JS Jquery -->
@@ -113,15 +120,21 @@ $(document).ready( function () {
 
     // bouton de téléchargement de tout les fichier séléctioné
     $(".download-multi-file").click(function(){
-        var datas = { 'files' : [], "path" : "<?=getcwd();?>"};
+        var datas = { 'files' : [] };
 
         // récuperation de tout les fichier séléctionner
         $.each($("input[name='files']:checked"), function(){            
             datas['files'].push($(this).val());
         });
+
+        // si il n'y a pas de fichier séléctioner je retourne une erreur
+        if (datas['files'] == "") {
+            alert('Aucun fichier séléctioné...');
+            return;
+        }
         
         // lien vers la page de téléchargement je passe en GET tout les fichier a télécharger
-        var link = "../download.php?path=<?=getcwd();?>&files[]=" + datas['files'].join("&files[]= ");
+        var link = "<?=$download_script;?>?path=<?=getcwd();?>&files[]=" + datas['files'].join("&files[]= ");
 
         // je créé un lien virtuel pour ouvrire la page de téléchargement dans un nouvelle onglet
         var element = document.createElement('a');
