@@ -68,7 +68,7 @@ if (empty($download_script)) {
                     <td><?=$value_file['path'];?></td>
                     <td class="text-center">
                         <a href="<?=$value_file['path'];?>" target="_blank"><i class="far fa-eye" style="font-size: 18px;"></i></a>  
-                        <?=$value_file['type'] != 'directory' ? '<a href="'. $download_script . '?path=' . getcwd() . '&files[]=' . $value_file['hash_path_complete'] . '" download><i class="fas fa-file-download" style="font-size: 18px;"></i></a>' : '<a href="#"><i class="fas fa-file-archive" style="font-size: 18px;"></i></a>';?>
+                        <?=$value_file['type'] != 'directory' ? '<a href="'. $download_script . '?path=' . getcwd() . '&files[]=' . $value_file['hash_path_complete'] . '" download><i class="fas fa-file-download" style="font-size: 18px;"></i></a>' : '<a href="'. $download_script . '?path=' . $value_file['path_complete'] . '"><i class="fas fa-file-archive" style="font-size: 18px;"></i></a>';?>
                     </td>
                 </tr>
                 <?php

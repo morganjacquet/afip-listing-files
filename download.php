@@ -8,8 +8,12 @@ foreach (list_file($_GET['path']) as $value) {
     //je recupère les infos de chaque fichier
     $value_file = get_info_file($value);
 
-    //si un fichier est dans la liste des fichier a télécharger alors je stock ses infos dans un tableau
-    if (in_array($value_file['hash_path_complete'], $_GET['files']) && $value_file['type'] != 'directory') {
+    if (!empty($_GET['files'])) {
+        //si un fichier est dans la liste des fichier a télécharger alors je stock ses infos dans un tableau
+        if (in_array($value_file['hash_path_complete'], $_GET['files']) && $value_file['type'] != 'directory') {
+            $result[] = $value_file;
+        }
+    } elseif ($value_file['type'] != 'directory') {
         $result[] = $value_file;
     }
 }
